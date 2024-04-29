@@ -1,0 +1,22 @@
+mat-card {
+  height: 100%;
+}
+
+mat-card-subtitle {
+  height: 44px;
+}
+
+mat-card-content {
+  height: 80px;
+}
+
+mat-card-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mat-card-image {
+  position: relative;
+  height: 200px;
+}
