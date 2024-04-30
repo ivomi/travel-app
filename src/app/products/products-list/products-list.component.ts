@@ -1,4 +1,14 @@
-import { Component, OnInit, inject } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  OnInit,
+  computed,
+  effect,
+  inject,
+  signal,
+} from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -14,6 +24,7 @@ const TYPES = ['All', 'City', 'Country'];
 @Component({
   selector: 'app-products-list',
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     FormsModule,
     MatButtonModule,
@@ -28,34 +39,61 @@ const TYPES = ['All', 'City', 'Country'];
   styleUrl: './products-list.component.scss',
 })
 export class ProductsListComponent implements OnInit {
-  private readonly productService = inject(ProductService);
-  protected readonly types = TYPES;
+  protected readonly productService = inject(ProductService);
+  protected readonly types = signal(TYPES);
+  protected destroyRef = inject(DestroyRef);
 
-  search?: string;
-  type = 'All';
+  search = signal<string | null>(null);
+  type = signal('All');
 
-  isLoading = false;
-  products: ProductModel[] = [];
+  isLoading = signal(false);
+  products = signal<ProductModel[]>([]);
+
+  title = signal('Title');
+  prettySearch = computed(() => {
+    return `Query: ${this.search()} and type: ${this.type()}`;
+  });
+  selected = signal(0);
+
+  prettyDate = toSignal(this.productService.search(''));
+
+  constructor() {
+    effect(() => {
+      console.log(this.selected());
+    });
+    effect(
+      () => {
+        console.log(this.search());
+        if (this.search()?.startsWith('vi')) {
+          this.type.set('City');
+        }
+      },
+      { allowSignalWrites: true }
+    );
+  }
 
   ngOnInit(): void {
     this.onSearch();
+    setTimeout(() => {
+      this.title.update(value => value + 'NEW TITLE');
+    }, 1500);
   }
 
   onSearch() {
-    this.isLoading = true;
-    this.productService.search(this.search, this.type).subscribe(products => {
-      this.products = products;
-      this.isLoading = false;
+    this.isLoading.set(true);
+    this.productService.search(this.search(), this.type()).subscribe(products => {
+      this.products.set(products);
+      this.isLoading.set(false);
     });
   }
 
   addFavorite(id: number) {
-    const product = this.products.find(item => item.id === id);
+    const product = this.products().find(item => item.id === id);
     if (product) product.isFavorite = true;
   }
 
   removeFavorite(id: number) {
-    const product = this.products.find(item => item.id === id);
+    const product = this.products().find(item => item.id === id);
     if (product) product.isFavorite = false;
   }
 }

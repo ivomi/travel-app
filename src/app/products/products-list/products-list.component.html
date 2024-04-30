@@ -1,6 +1,6 @@
 <h1>Choose your Holidays</h1>
 
-@if (isLoading) {
+@if (isLoading()) {
   <mat-progress-bar mode="indeterminate"></mat-progress-bar>
 }
 
@@ -10,15 +10,23 @@
     <input [(ngModel)]="search" name="search" matInput />
   </mat-form-field>
   <mat-radio-group [(ngModel)]="type" name="type">
-    @for (item of types; track $index) {
+    @for (item of types(); track $index) {
       <mat-radio-button [value]="item">{{ item }}</mat-radio-button>
     }
   </mat-radio-group>
   <button type="submit" mat-raised-button color="primary">Search</button>
 </form>
 
+<p>{{ title() }}</p>
+<p>{{ prettySearch() }}</p>
+<p>{{ prettyDate() }}</p>
+
 <div class="products-grid">
-  @for (item of products; track item) {
-    <app-products-card [product]="item" (addFavorite)="addFavorite($event)" (removeFavorite)="removeFavorite($event)" />
+  @for (item of products(); track item) {
+    <app-products-card
+      [product]="item"
+      [(selected)]="selected"
+      (addFavorite)="addFavorite($event)"
+      (removeFavorite)="removeFavorite($event)" />
   }
 </div>

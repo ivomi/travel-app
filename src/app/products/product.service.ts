@@ -9,7 +9,7 @@ export class ProductService {
   private readonly http = inject(HttpClient);
   private readonly url = environment.apiUrl;
 
-  search(title?: string, type?: string): Observable<ProductModel[]> {
+  search(title: string | null, type?: string): Observable<ProductModel[]> {
     return this.http.get<{ items: ProductModel[] }>(`${this.url}/data.json`).pipe(
       delay(1000),
       map(data => data.items),

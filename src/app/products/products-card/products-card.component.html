@@ -1,25 +1,25 @@
 <mat-card>
   <mat-card-header>
-    <mat-card-title>{{ product?.title }}</mat-card-title>
-    <mat-card-subtitle>{{ product?.teaser }}</mat-card-subtitle>
+    <mat-card-title>{{ product().title }}</mat-card-title>
+    <mat-card-subtitle>{{ product().teaser }}</mat-card-subtitle>
   </mat-card-header>
   <div class="mat-card-image">
-    <img [ngSrc]="product?.imageUrl ?? ''" fill [alt]="product?.title" />
+    <img [ngSrc]="product().imageUrl" fill [alt]="product().title" />
   </div>
   <mat-card-content>
-    <p>{{ product?.description }}</p>
+    <p>{{ product().description }}</p>
   </mat-card-content>
   <mat-card-actions>
-    @if (product?.isFavorite) {
-      <button mat-icon-button (click)="removeFavorite.emit(product?.id)">
+    @if (product().isFavorite) {
+      <button mat-icon-button (click)="removeFavorite.emit(product().id)">
         <i class="material-icons">favorite</i>
       </button>
     } @else {
-      <button mat-icon-button (click)="addFavorite.emit(product?.id)">
+      <button mat-icon-button (click)="addFavorite.emit(product().id)">
         <i class="material-icons">favorite_outlined</i>
       </button>
     }
-    <button mat-icon-button><i class="material-icons">shopping_cart</i></button>
+    <button mat-icon-button (click)="selected.set(product().id)"><i class="material-icons">shopping_cart</i></button>
     <button mat-icon-button><i class="material-icons">info</i></button>
   </mat-card-actions>
 </mat-card>
